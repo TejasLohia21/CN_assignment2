@@ -1,0 +1,223 @@
+
+***
+
+# Computer Networks Assignment 2
+
+### Authors:  
+Tejas Lohia  
+Umang Shikarvar
+
+***
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Setup Instructions](#setup-instructions)
+- [Directory Structure](#directory-structure)
+- [Part Breakdown](#part-breakdown)
+  - [PART_A: Network Topology Setup](#part_a-network-topology-setup)
+  - [PART_B: Default Resolver Experiments](#part_b-default-resolver-experiments)
+  - [PART_C: Custom DNS Resolver](#part_c-custom-dns-resolver)
+  - [PART_D: Custom DNS Server + Host Interface](#part_d-custom-dns-server-host-interface)
+  - [PART_E: Multiserver, No-Cache, and Post-Processing](#part_e-multiserver-no-cache-and-post-processing)
+- [textfiles: Input Domain Lists](#textfiles-input-domain-lists)
+- [Notes on JSON Files](#notes-on-json-files)
+- [How to Run](#how-to-run)
+- [Analysis and Results](#analysis-and-results)
+- [Troubleshooting](#troubleshooting)
+- [References](#references)
+
+***
+
+## Overview
+
+This project explores DNS querying in a simulated virtual network using Mininet. The focus is on capturing, resolving, and analyzing DNS queries both with the system's default resolver and a custom iterative DNS resolver/server. The assignment includes in-depth measurements of latency, throughput, cache hits, and the full resolution path for each query.
+
+***
+
+## Setup Instructions
+
+1. **Clone the repository**
+   ```
+   git clone <repo_link_here>
+   cd CN_ASSIGNMENT2
+   ```
+
+2. **Install Mininet and Dependencies (Linux)**
+   ```
+   git clone https://github.com/mininet/mininet.git
+   cd mininet
+   sudo ./util/install.sh -a
+   ```
+
+3. **Set up a Python virtual environment**
+   ```
+   python3 -m venv mn-venv
+   source mn-venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+4. **Launch Mininet topology**
+   - Examples are in PART_A (see below).
+   - Use provided scripts to bootstrap hosts with/without NAT, and add DNS nodes.
+
+***
+
+## Directory Structure
+
+```text
+CN_ASSIGNMENT2/
+│
+├── PART_A/                # Network topology setup scripts
+├── PART_B/                # Default DNS resolver experiment + statistics
+├── PART_C/                # Custom DNS resolver implementation
+├── PART_D/                # Custom DNS server and host client code
+├── PART_E/                # Multiserver/no-cache/post-processing analysis
+├── textfiles/             # Cleaned lists of domain queries from PCAPs
+│
+└── customDNSresolver.py   # Final combined DNS resolver/server
+```
+
+***
+
+## Part Breakdown
+
+### PART_A: Network Topology Setup
+
+- **codewithnat.py** / **codewithoutnat.py**  
+  - Scripts for setting up the Mininet emulated network, with/without NAT if outside network connectivity is desired.
+- **README.md, commands.txt**  
+  - Additional setup and usage information.
+
+***
+
+### PART_B: Default Resolver Experiments
+
+- **host.py**  
+  - Run on each Mininet host. Reads domain names from corresponding text files (see `textfiles/`). Resolves domains using the host's default system resolver (`getaddrinfo`).
+- **1PCAP.json, 2PCAP.json, ...**  
+  - *Output statistics and logs for each host’s PCAP-derived domain list, using the default resolver.*
+  - Contains per-query statistics: latency, throughput, resolution status, summary details.
+
+***
+
+### PART_C: Custom DNS Resolver
+
+- **DNS_custom.py**  
+  - Python implementation of a custom iterative DNS resolver (does the DNS walk itself).
+  - Used to compare with the default resolver in PART_B.
+
+***
+
+### PART_D: Custom DNS Server + Host Interface
+
+- **customresolver.py**  
+  - Runs on the DNS node. Listens for DNS queries from hosts, performs iterative DNS resolution.
+  - Stores per-query resolution paths, timings, cache behavior.
+- **host.py**  
+  - Client code for host nodes—sends queries over UDP to the DNS server.
+- **Output JSON Files:**  
+  - `output_PCAPX.json`, `PCAPX_resolved.json` (see below)  
+  - Each records timestamp, client IP, domain, iterative steps, latency, cache status, and eventual success/failure.
+
+***
+
+### PART_E: Multiserver, No-Cache, and Post-Processing
+
+- **customDNS_cache.py**  
+  - Implements advanced caching strategies (multi-level cache, DNS record type-aware).
+  - Benchmarks performance differences when resolving with/without cache.
+- **Resolved_domain_names/**  
+  - `PCAPX_resolved.json`: Post-processed statistics after resolution runs.
+- **Resolver_Multiserver/**  
+  - `PCAPX_cache_multiserver.json`: JSON logs when multi-server and caching strategies are used.
+- **Resolver_no_cache_singleserver/**  
+  - `PCAPX.json` files: JSON logs when only a single server is used, and no caching is present.
+
+***
+
+## textfiles: Input Domain Lists
+
+- **temp_h1.txt ... temp_h4.txt**  
+  - Clean lists of domains parsed from PCAP files via tshark, one for each host node.
+  - Used as input for both default and custom resolver runs.
+
+***
+
+## Notes on JSON Files
+
+| JSON File                              | Produced By          | Description                                            |
+|---------------------------------------- |--------------------- |--------------------------------------------------------|
+| 1PCAP.json, ..., 4PCAP.json             | PART_B/host.py       | Default resolver results for each host/domain list      |
+| PCAPX_resolved.json                     | PART_D/customresolver.py, host.py | Results for custom DNS server and client runs           |
+| PCAPX_cache_multiserver.json            | PART_E/customDNS_cache.py | Results for multiserver and cache-aware resolver runs   |
+| PCAPX.json (no_cache_singleserver)      | PART_E/customDNS_cache.py | Results without cache, single server only               |
+| output_PCAPX.json                       | PART_D/customresolver.py | Per-query detailed logs used for analysis/report plots  |
+
+_File contents include per-query resolution steps, performance statistics, and whether cache was used for the resolution._
+
+***
+
+## How to Run
+
+### 1. **Default Resolver Experiment (PART_B)**
+```bash
+python host.py temp_h1.txt
+# Repeat for h2, h3, h4 with their respective temp files
+```
+
+### 2. **Custom DNS Server Experiment (PART_D)**
+- Start the DNS server on `dns` node:
+```bash
+python customresolver.py
+```
+- Start host scripts to send queries:
+```bash
+python host.py temp_h1.txt
+# See README for precise usage and file paths
+```
+- Check JSON output for results.
+
+### 3. **Multiserver & Cache Experiments (PART_E)**
+```bash
+python customDNS_cache.py
+# Results in Resolver_Multiserver or Resolver_no_cache_singleserver directories
+```
+
+***
+
+## Analysis and Results
+
+- **Latencies, throughput, and cache hits** are logged and compared between default resolver runs (systemd, getaddrinfo) and custom iterative/server implementations.
+- **Graphs and tables** are generated (see report PDF or notebook) using the output JSON logs.
+- **Observations:**  
+  - Default resolver is often faster due to direct recursive querying or system cache.
+  - Custom resolver performance improves with cache and multi-server querying enabled.
+
+***
+
+## Troubleshooting
+
+- **Mininet install issues:**  
+  - Try using the latest mininet release and a supported Linux VM.
+- **Network connectivity:**  
+  - Ensure proper NAT configuration for global DNS access.
+- **DNS server not responding:**  
+  - Confirm server (customresolver.py) is running and listening on correct IP/port.
+- **No cache hits:**  
+  - Make sure cache code in PART_E is enabled for experiments.
+
+***
+
+## References
+
+- [Mininet Project](https://github.com/mininet/mininet)
+- [dnslib Python Library](https://pypi.org/project/dnslib/)
+- Assignment report: see `23110335_301.pdf`  
+- Custom scripts and topology: see all PART_A-PART_E code folders
+
+***
+
+*For further details or for plotting/analysis code, consult the assignment report and the provided Jupyter notebook.*
+
+***
