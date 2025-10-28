@@ -1,11 +1,8 @@
-## Json Code
-
 import socket
 import time
 import sys
-from dnslib import DNSRecord
+from dnslib import DNSRecord, RR
 import json
-
 
 ROOT_SERVERS = [
     "198.41.0.4","199.9.14.201","192.33.4.12","199.7.91.13",
@@ -14,26 +11,64 @@ ROOT_SERVERS = [
     "202.12.27.33"
 ]
 
-def save_log_json(json_file, record):
-    try:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = []
+CACHE = {}
 
-    data.append(record)
 
-    with open(json_file, "w") as f:
-        json.dump(data, f, indent=4)
+def put_cache(rr):
+    key = (str(rr.rname).lower(), rr.rtype)
+    ttl = rr.ttl if rr.ttl > 0 else 300
+    expiry = time.time() + ttl
+
+    record = DNSRecord()
+    record.add_answer(RR(rr.rname, rr.rtype, rdata=rr.rdata, ttl=rr.ttl))
+    response_bytes = bytes(record.pack())
+
+    CACHE[key] = {
+        "response": response_bytes,
+        "expiry": expiry
+    }
+
+
+def update_cache_from_response(resp):
+    for rr in resp.rr + resp.auth + resp.ar:
+        put_cache(rr)
+
+
+def check_cache(qname, qtype):
+    key = (qname.lower(), qtype)
+    entry = CACHE.get(key)
+    if entry and entry["expiry"] > time.time():
+        return entry["response"]
+    elif entry:
+        del CACHE[key] 
+    return None
+
 
 def iterative_resolve(query_data):
     query = DNSRecord.parse(query_data)
     qname = str(query.q.qname)
     log = []
     start_time = time.time()
-    current_servers = ROOT_SERVERS.copy()
+    current_servers = ROOT_SERVERS
     response = None
     step = 0
+    cache_status = "MISS"
+
+    qtype = query.q.qtype
+    cached_response = check_cache(qname, qtype)
+    if cached_response:
+        cache_status = "HIT"
+        log.append({
+            "step": 0,
+            "mode": "Cache",
+            "stage_resolution": "Cached Response",
+            "server": "Local Cache",
+            "rtt": 0,
+            "response": [f"Cached result for {qname} (Type {qtype})"],
+            "cache_status": cache_status
+        })
+        time_taken = (time.time() - start_time) * 1000
+        return cached_response, log, round(time_taken, 2), qname
 
     while True:
         step += 1
@@ -53,7 +88,8 @@ def iterative_resolve(query_data):
                 "stage_resolution": "Timeout",
                 "server": server,
                 "rtt": None,
-                "response": ["No response (timeout)"]
+                "response": ["No response (timeout)"],
+                "cache_status": cache_status
             })
             sock.close()
             break
@@ -61,8 +97,11 @@ def iterative_resolve(query_data):
         sock.close()
         rtt = (recv_time - send_time) * 1000
         resp = DNSRecord.parse(data)
+        update_cache_from_response(resp)
+
 
         stage = ''
+
         if step == 1:
             stage = "Root"
         elif len(resp.auth) > 0 and not resp.rr:
@@ -84,43 +123,67 @@ def iterative_resolve(query_data):
             "stage_resolution": stage,
             "server": server,
             "rtt": round(rtt, 2),
-            "response": response_summary
+            "response": response_summary,
+            "cache_status": cache_status
         })
 
         if resp.rr:
             response = data
+            # update_cache(qname, response)
+            ttl_list = [rr.ttl for rr in resp.rr]
+            ttl = min(ttl_list) if ttl_list else 300
+
+            CACHE[(qname.lower(), query.q.qtype)] = {
+                "response": response,
+                "expiry": time.time() + ttl
+            }
+
             break
 
-        IP = [str(rr.rdata) for rr in resp.ar if rr.rtype == 1]
+        IP = []
+        for rr in resp.ar:
+            if rr.rtype == 1: #corresponds to the A type
+                IP.append(str(rr.rdata))
+
         if not IP:
-            ns_names = [str(rr.rdata) for rr in resp.auth if rr.rtype == 2]
+            ns_names = [str(rr.rdata) for rr in resp.auth if rr.rtype == 2] # rr.type == 2 means Name Server record
             if not ns_names:
                 break
 
             IP = []
             for ns in ns_names:
-                new_query = DNSRecord.question(ns)
-                new_response, _, _, _ = iterative_resolve(bytes(new_query.pack()))
+                new_query_ = DNSRecord.question(ns)
+                new_response, _, _, _ = iterative_resolve(bytes(new_query_.pack()))
                 if new_response:
                     parsing_new = DNSRecord.parse(new_response)
                     for rr in parsing_new.rr:
-                        if rr.rtype == 1:
+                        if rr.rtype == 1: #A record
                             IP.append(str(rr.rdata))
 
-        if not IP:
+        if not IP: #empty, break
             break
 
         current_servers = IP
 
-    time_taken = 1000 * (time.time() - start_time)
+    time_taken = 1000*(time.time() - start_time)
     return response, log, round(time_taken, 2), qname
 
 
+def save_log_json(json_file, record):
+    try:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = []
 
+    data.append(record)
 
+    with open(json_file, "w") as f:
+        json.dump(data, f, indent=4)
 
-json_file = "output_PCAP1.json"
+json_file = "output_PCAP4.json"
 print(f"Logging at {json_file}")
+
 
 with open(json_file, "a") as f:
     time_run = f"\n DNS :: {time.strftime('%Y-%m-%d %H:%M:%S')} \n"
@@ -152,4 +215,4 @@ with open(json_file, "a") as f:
         }
 
         save_log_json(json_file, record)
-        print(f"Logged resolution for {qname} ({timetaken} ms)")
+        print(f"✔ Logged resolution for {qname} ({timetaken} ms)")
