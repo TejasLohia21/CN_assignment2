@@ -119,7 +119,7 @@ def iterative_resolve(query_data):
 
 
 
-json_file = "output_PCAP1.json"
+json_file = "PCAP1.json"
 print(f"Logging at {json_file}")
 
 with open(json_file, "a") as f:
