@@ -1,0 +1,731 @@
+[
+    {
+        "timestamp": "2025-10-28 06:47:35",
+        "summary": {
+            "total": 101,
+            "success": 71,
+            "fail": 30,
+            "avg_latency_ms": 4275.521051901437,
+            "throughput_bps": 69.04019676467027
+        },
+        "details": [
+            {
+                "domain": "dns.qry.name",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "tenant-internet.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "gadanguides.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2a02:250:0:8::53",
+                    "93.188.2.51"
+                ]
+            },
+            {
+                "domain": "charityjob.co.uk",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:20::6818:910e",
+                    "104.24.144.14",
+                    "104.24.145.14",
+                    "2606:4700:20::ac43:4048",
+                    "2606:4700:20::6818:900e",
+                    "172.67.64.72"
+                ]
+            },
+            {
+                "domain": "sarahpartridge.net",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "ecolems.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "51.103.54.68"
+                ]
+            },
+            {
+                "domain": "marilynlingerie.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "anvilnetworksolutions.net",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "217.160.0.13",
+                    "2001:8d8:100f:f000::200"
+                ]
+            },
+            {
+                "domain": "cdmail.fr",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "5.196.212.149"
+                ]
+            },
+            {
+                "domain": "freeditorial.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "51.178.246.100"
+                ]
+            },
+            {
+                "domain": "ciber.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "103.247.209.15"
+                ]
+            },
+            {
+                "domain": "get-webby.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "gadgetgearpro.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "sonoma-marinfair.org",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "172.67.163.188",
+                    "2606:4700:3035::ac43:a3bc",
+                    "104.21.34.187",
+                    "2606:4700:3030::6815:22bb"
+                ]
+            },
+            {
+                "domain": "ishidatic.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "15.197.172.60"
+                ]
+            },
+            {
+                "domain": "minecraftserverdeals.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:3034::ac43:8130",
+                    "2606:4700:3034::6815:171",
+                    "104.21.1.113",
+                    "172.67.129.48"
+                ]
+            },
+            {
+                "domain": "romney.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "208.91.197.27"
+                ]
+            },
+            {
+                "domain": "bookingnest.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "13.248.169.48",
+                    "76.223.54.146"
+                ]
+            },
+            {
+                "domain": "metar.gr",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "75.119.133.58"
+                ]
+            },
+            {
+                "domain": "bigliettieventi.info",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "asseenontvlaunchpad.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "ftf.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "23.227.38.65"
+                ]
+            },
+            {
+                "domain": "polymth.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "104.21.57.169",
+                    "172.67.147.218",
+                    "2606:4700:3036::6815:39a9",
+                    "2606:4700:3030::ac43:93da"
+                ]
+            },
+            {
+                "domain": "crsgfk.de",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "urbannetwork.co.uk",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "85.92.70.198"
+                ]
+            },
+            {
+                "domain": "synrc.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:3033::ac43:b9ea",
+                    "2606:4700:3036::6815:2875",
+                    "172.67.185.234",
+                    "104.21.40.117"
+                ]
+            },
+            {
+                "domain": "callcomm.info",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "ceskykutil.cz",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "80.211.205.242"
+                ]
+            },
+            {
+                "domain": "ximangquantrieu.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "123.31.17.119"
+                ]
+            },
+            {
+                "domain": "shishioh.info",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "219.94.162.166"
+                ]
+            },
+            {
+                "domain": "vpndefender.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "34.234.125.61",
+                    "54.224.56.57"
+                ]
+            },
+            {
+                "domain": "hutago.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "118.27.125.209"
+                ]
+            },
+            {
+                "domain": "tangkas888.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "172.67.130.50",
+                    "2606:4700:3032::6815:771",
+                    "2606:4700:3032::ac43:8232",
+                    "104.21.7.113"
+                ]
+            },
+            {
+                "domain": "egov.sy",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "185.216.134.58"
+                ]
+            },
+            {
+                "domain": "abmcare.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "104.18.10.144",
+                    "2606:4700::6812:b90",
+                    "2606:4700::6812:a90",
+                    "104.18.11.144"
+                ]
+            },
+            {
+                "domain": "iael.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "172.104.149.86",
+                    "139.162.174.209",
+                    "2a01:7e01::f03c:95ff:feed:783e",
+                    "2a01:7e01::f03c:95ff:fe91:5d91",
+                    "172.104.251.198",
+                    "2a01:7e01::f03c:95ff:feeb:9d4b",
+                    "139.162.181.76",
+                    "2a01:7e01::f03c:95ff:fe00:2692"
+                ]
+            },
+            {
+                "domain": "sailor.pl",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "88.99.19.146"
+                ]
+            },
+            {
+                "domain": "skyhightmatter.info",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "autopareri.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "147.93.94.216"
+                ]
+            },
+            {
+                "domain": "cia.it",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "3.248.13.228",
+                    "54.228.218.49"
+                ]
+            },
+            {
+                "domain": "texasbeyondhistory.net",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "146.6.162.220"
+                ]
+            },
+            {
+                "domain": "gardenofwords.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "192.0.78.24",
+                    "192.0.78.25"
+                ]
+            },
+            {
+                "domain": "giuseppelivraghi.it",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "89.46.108.54"
+                ]
+            },
+            {
+                "domain": "hdcric.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "159.69.42.212",
+                    "159.69.186.9",
+                    "95.216.161.60",
+                    "159.69.83.207"
+                ]
+            },
+            {
+                "domain": "chekiang.info",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "archiportale.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "104.18.12.154",
+                    "2606:4700::6812:c9a",
+                    "2606:4700::6812:d9a",
+                    "104.18.13.154"
+                ]
+            },
+            {
+                "domain": "de.vu",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "81.28.232.69"
+                ]
+            },
+            {
+                "domain": "teachmyass.info",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "103.224.182.212"
+                ]
+            },
+            {
+                "domain": "nasaspaceflight.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "172.66.40.183",
+                    "172.66.43.73"
+                ]
+            },
+            {
+                "domain": "consumerreviews24.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "dilw.ie",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "35.214.43.230"
+                ]
+            },
+            {
+                "domain": "bbqinjector.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "gxjbsj.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "172.247.103.2"
+                ]
+            },
+            {
+                "domain": "fmnara.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "49.247.215.98"
+                ]
+            },
+            {
+                "domain": "pet-connect.ru",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "194.58.112.174"
+                ]
+            },
+            {
+                "domain": "synchchaos.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "uca.edu",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "161.31.3.35"
+                ]
+            },
+            {
+                "domain": "oaister.org",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "132.174.1.212"
+                ]
+            },
+            {
+                "domain": "chenghuavideo.asia",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "video-peche-poisson.fr",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "currencyrates.org",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:3035::ac43:d17d",
+                    "2606:4700:3030::6815:1746",
+                    "104.21.23.70",
+                    "172.67.209.125"
+                ]
+            },
+            {
+                "domain": "zpav.pl",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "83.238.107.112"
+                ]
+            },
+            {
+                "domain": "tawali.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "173.249.147.46"
+                ]
+            },
+            {
+                "domain": "dock2office.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "vlielandoutdoorcenter.nl",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "185.232.249.41"
+                ]
+            },
+            {
+                "domain": "gregginn.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "15.197.148.33",
+                    "3.33.130.190"
+                ]
+            },
+            {
+                "domain": "arcoat.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "66.39.19.55"
+                ]
+            },
+            {
+                "domain": "cushinglawoffices.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "eggcityradio.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "103.224.182.253"
+                ]
+            },
+            {
+                "domain": "michaelbyers.org",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "198.185.159.144",
+                    "198.185.159.145",
+                    "198.49.23.144",
+                    "198.49.23.145"
+                ]
+            },
+            {
+                "domain": "stkpro.ru",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "205.251.138.125"
+                ]
+            },
+            {
+                "domain": "silveropt.ru",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "topbarbee.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "159.203.135.249"
+                ]
+            },
+            {
+                "domain": "teleskill.it",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "185.81.4.109"
+                ]
+            },
+            {
+                "domain": "virtualjerusalem.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "69.48.168.47"
+                ]
+            },
+            {
+                "domain": "morban.co.uk",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2001:8d8:100f:f000::2a2",
+                    "217.160.0.111"
+                ]
+            },
+            {
+                "domain": "mechachal.org",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "noblewomanhood.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "74.208.236.114"
+                ]
+            },
+            {
+                "domain": "cosmeticaestheticsurgery.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "15.197.148.33",
+                    "3.33.130.190"
+                ]
+            },
+            {
+                "domain": "note-so-easy.co.za",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "102.211.204.40"
+                ]
+            },
+            {
+                "domain": "vietcapitaltour.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "ncees.org",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "104.20.28.40",
+                    "2606:4700:10::6814:1c28",
+                    "2606:4700:10::ac42:9e61",
+                    "172.66.158.97"
+                ]
+            },
+            {
+                "domain": "laigang001.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "verlockeshop.de",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "185.64.112.230"
+                ]
+            },
+            {
+                "domain": "clickdownloadfiles.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "e-hps.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "208.44.185.221"
+                ]
+            },
+            {
+                "domain": "drglendza.co.rs",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "ghimpele.ro",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "89.35.160.167"
+                ]
+            },
+            {
+                "domain": "pahibu.net",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "trackcheatingspouse.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "dricom-hosting.nl",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "46.249.36.223",
+                    "2a00:1ca8:15::53"
+                ]
+            },
+            {
+                "domain": "medipacademy.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:3037::6815:429",
+                    "2606:4700:3037::ac43:83a3",
+                    "104.21.4.41",
+                    "172.67.131.163"
+                ]
+            },
+            {
+                "domain": "e-daily.gr",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "2606:4700:20::681a:c34",
+                    "172.67.70.26",
+                    "2606:4700:20::681a:d34",
+                    "104.26.12.52",
+                    "104.26.13.52",
+                    "2606:4700:20::ac43:461a"
+                ]
+            },
+            {
+                "domain": "cuteteenschoolgirlz.com",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "hralda.info",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "sendrakhizonline.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "20.244.2.144"
+                ]
+            },
+            {
+                "domain": "hayalforum.net",
+                "status": "FAILED",
+                "resolved_ips": []
+            },
+            {
+                "domain": "begleyhutton.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "198.185.159.144",
+                    "198.185.159.145",
+                    "198.49.23.144",
+                    "198.49.23.145"
+                ]
+            },
+            {
+                "domain": "bmw-parts.ru",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "91.236.136.97"
+                ]
+            },
+            {
+                "domain": "rterc.in",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "93.127.173.138",
+                    "88.222.243.242",
+                    "2a02:4780:1f:82b5:1802:7425:d73b:5c7",
+                    "2a02:4780:3d:eb95:b1ef:9f9c:e4e1:7ffc"
+                ]
+            },
+            {
+                "domain": "monitis.com",
+                "status": "SUCCESS",
+                "resolved_ips": [
+                    "188.172.236.218"
+                ]
+            }
+        ]
+    }
+]
