@@ -4,215 +4,208 @@ import sys
 from dnslib import DNSRecord, RR
 import json
 
-ROOT_SERVERS = [
-    "198.41.0.4","199.9.14.201","192.33.4.12","199.7.91.13",
-    "192.203.230.10","192.5.5.241","192.112.36.4","198.97.190.53",
-    "192.36.148.17","192.58.128.30","193.0.14.129","199.7.83.42",
+# Root DNS servers
+ROOT_DNS_SERVERS = [
+    "198.41.0.4", "199.9.14.201", "192.33.4.12", "199.7.91.13",
+    "192.203.230.10", "192.5.5.241", "192.112.36.4", "198.97.190.53",
+    "192.36.148.17", "192.58.128.30", "193.0.14.129", "199.7.83.42",
     "202.12.27.33"
 ]
 
-CACHE = {}
+DNS_CACHE = {}
 
 
-def put_cache(rr):
-    key = (str(rr.rname).lower(), rr.rtype)
-    ttl = rr.ttl if rr.ttl > 0 else 300
-    expiry = time.time() + ttl
+def add_to_cache(record):
+    """Add a record to cache."""
+    cache_key = (str(record.rname).lower(), record.rtype)
+    ttl = record.ttl if record.ttl > 0 else 300
+    expiry_time = time.time() + ttl
 
-    record = DNSRecord()
-    record.add_answer(RR(rr.rname, rr.rtype, rdata=rr.rdata, ttl=rr.ttl))
-    response_bytes = bytes(record.pack())
-
-    CACHE[key] = {
-        "response": response_bytes,
-        "expiry": expiry
+    cached_record = DNSRecord()
+    cached_record.add_answer(RR(record.rname, record.rtype, rdata=record.rdata, ttl=record.ttl))
+    DNS_CACHE[cache_key] = {
+        "response": bytes(cached_record.pack()),
+        "expiry": expiry_time
     }
 
 
-def update_cache_from_response(resp):
-    for rr in resp.rr + resp.auth + resp.ar:
-        put_cache(rr)
+def update_cache(response):
+    """Update cache using records from a DNS response."""
+    for record in response.rr + response.auth + response.ar:
+        add_to_cache(record)
 
 
-def check_cache(qname, qtype):
-    key = (qname.lower(), qtype)
-    entry = CACHE.get(key)
-    if entry and entry["expiry"] > time.time():
-        return entry["response"]
-    elif entry:
-        del CACHE[key] 
+def get_from_cache(domain_name, query_type):
+    """Retrieve record from cache if still valid."""
+    cache_key = (domain_name.lower(), query_type)
+    cached_entry = DNS_CACHE.get(cache_key)
+
+    if cached_entry and cached_entry["expiry"] > time.time():
+        return cached_entry["response"]
+    elif cached_entry:
+        del DNS_CACHE[cache_key]
     return None
 
 
-def iterative_resolve(query_data):
-    query = DNSRecord.parse(query_data)
-    qname = str(query.q.qname)
-    log = []
+def resolve_iteratively(raw_query):
+    """Perform iterative DNS resolution."""
+    parsed_query = DNSRecord.parse(raw_query)
+    domain_name = str(parsed_query.q.qname)
+    query_type = parsed_query.q.qtype
+
+    logs = []
     start_time = time.time()
-    current_servers = ROOT_SERVERS
-    response = None
-    step = 0
+    active_servers = ROOT_DNS_SERVERS
+    final_response = None
+    step_count = 0
     cache_status = "MISS"
 
-    qtype = query.q.qtype
-    cached_response = check_cache(qname, qtype)
+    cached_response = get_from_cache(domain_name, query_type)
     if cached_response:
         cache_status = "HIT"
-        log.append({
+        logs.append({
             "step": 0,
             "mode": "Cache",
-            "stage_resolution": "Cached Response",
+            "stage": "Cached Response",
             "server": "Local Cache",
             "rtt": 0,
-            "response": [f"Cached result for {qname} (Type {qtype})"],
+            "response": [f"Cached result for {domain_name} (Type {query_type})"],
             "cache_status": cache_status
         })
-        time_taken = (time.time() - start_time) * 1000
-        return cached_response, log, round(time_taken, 2), qname
+        total_time = (time.time() - start_time) * 1000
+        return cached_response, logs, round(total_time, 2), domain_name
 
     while True:
-        step += 1
-        server = current_servers[0]
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(2)
+        step_count += 1
+        server_ip = active_servers[0]
+        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_socket.settimeout(2)
 
         send_time = time.time()
         try:
-            sock.sendto(query_data, (server, 53))
-            data, _ = sock.recvfrom(2048)
+            udp_socket.sendto(raw_query, (server_ip, 53))
+            response_data, _ = udp_socket.recvfrom(2048)
             recv_time = time.time()
         except socket.timeout:
-            log.append({
-                "step": step,
+            logs.append({
+                "step": step_count,
                 "mode": "Iterative",
-                "stage_resolution": "Timeout",
-                "server": server,
+                "stage": "Timeout",
+                "server": server_ip,
                 "rtt": None,
                 "response": ["No response (timeout)"],
                 "cache_status": cache_status
             })
-            sock.close()
+            udp_socket.close()
             break
 
-        sock.close()
+        udp_socket.close()
         rtt = (recv_time - send_time) * 1000
-        resp = DNSRecord.parse(data)
-        update_cache_from_response(resp)
+        parsed_response = DNSRecord.parse(response_data)
+        update_cache(parsed_response)
 
-
-        stage = ''
-
-        if step == 1:
+        if step_count == 1:
             stage = "Root"
-        elif len(resp.auth) > 0 and not resp.rr:
+        elif len(parsed_response.auth) > 0 and not parsed_response.rr:
             stage = "TLD"
         else:
             stage = "Authoritative"
 
-        response_summary = []
-        records = resp.rr or resp.auth or []
+        record_summary = []
+        records = parsed_response.rr or parsed_response.auth or []
         if records:
-            for rr in records:
-                response_summary.append(f"{rr.rname} :: {rr.rtype} :: {rr.rdata}")
+            for record in records:
+                record_summary.append(f"{record.rname} :: {record.rtype} :: {record.rdata}")
         else:
-            response_summary.append("empty response")
+            record_summary.append("Empty response")
 
-        log.append({
-            "step": step,
+        logs.append({
+            "step": step_count,
             "mode": "Iterative",
-            "stage_resolution": stage,
-            "server": server,
+            "stage": stage,
+            "server": server_ip,
             "rtt": round(rtt, 2),
-            "response": response_summary,
+            "response": record_summary,
             "cache_status": cache_status
         })
 
-        if resp.rr:
-            response = data
-            # update_cache(qname, response)
-            ttl_list = [rr.ttl for rr in resp.rr]
-            ttl = min(ttl_list) if ttl_list else 300
-
-            CACHE[(qname.lower(), query.q.qtype)] = {
-                "response": response,
+        if parsed_response.rr:
+            final_response = response_data
+            ttl_values = [record.ttl for record in parsed_response.rr]
+            ttl = min(ttl_values) if ttl_values else 300
+            DNS_CACHE[(domain_name.lower(), parsed_query.q.qtype)] = {
+                "response": final_response,
                 "expiry": time.time() + ttl
             }
-
             break
 
-        IP = []
-        for rr in resp.ar:
-            if rr.rtype == 1: #corresponds to the A type
-                IP.append(str(rr.rdata))
+        next_server_ips = []
+        for record in parsed_response.ar:
+            if record.rtype == 1:  # A record
+                next_server_ips.append(str(record.rdata))
 
-        if not IP:
-            ns_names = [str(rr.rdata) for rr in resp.auth if rr.rtype == 2] # rr.type == 2 means Name Server record
+        if not next_server_ips:
+            ns_names = [str(record.rdata) for record in parsed_response.auth if record.rtype == 2]
             if not ns_names:
                 break
 
-            IP = []
-            for ns in ns_names:
-                new_query_ = DNSRecord.question(ns)
-                new_response, _, _, _ = iterative_resolve(bytes(new_query_.pack()))
-                if new_response:
-                    parsing_new = DNSRecord.parse(new_response)
-                    for rr in parsing_new.rr:
-                        if rr.rtype == 1: #A record
-                            IP.append(str(rr.rdata))
+            for ns_name in ns_names:
+                followup_query = DNSRecord.question(ns_name)
+                followup_response, _, _, _ = resolve_iteratively(bytes(followup_query.pack()))
+                if followup_response:
+                    parsed_followup = DNSRecord.parse(followup_response)
+                    for record in parsed_followup.rr:
+                        if record.rtype == 1:
+                            next_server_ips.append(str(record.rdata))
 
-        if not IP: #empty, break
+        if not next_server_ips:
             break
 
-        current_servers = IP
+        active_servers = next_server_ips
 
-    time_taken = 1000*(time.time() - start_time)
-    return response, log, round(time_taken, 2), qname
+    total_time = (time.time() - start_time) * 1000
+    return final_response, logs, round(total_time, 2), domain_name
 
 
-def save_log_json(json_file, record):
+def write_log(file_name, log_entry):
+    """Save DNS query log to a JSON file."""
     try:
-        with open(json_file, "r") as f:
-            data = json.load(f)
+        with open(file_name, "r") as f:
+            existing_data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        data = []
+        existing_data = []
 
-    data.append(record)
+    existing_data.append(log_entry)
 
-    with open(json_file, "w") as f:
-        json.dump(data, f, indent=4)
-
-json_file = "output_PCAP4.json"
-print(f"Logging at {json_file}")
+    with open(file_name, "w") as f:
+        json.dump(existing_data, f, indent=4)
 
 
-with open(json_file, "a") as f:
-    time_run = f"\n DNS :: {time.strftime('%Y-%m-%d %H:%M:%S')} \n"
-    print(time_run.strip())
+log_file = "dns_resolution_log.json"
+print(f"Logging to {log_file}")
+print(f"DNS Resolver active at 10.0.0.5:53")
 
-    print("Listening at 10.0.0.5 at port 53")
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_socket.bind(("10.0.0.5", 53))
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(("10.0.0.5", 53))
+while True:
+    raw_data, client_address = server_socket.recvfrom(512)
+    request_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    while True:
-        data, addr_tuple = sock.recvfrom(512)
-        packet_recv = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        response, loggin_detail, timetaken, qname = iterative_resolve(data)
-        status = ''
-        if response:
-            sock.sendto(response, addr_tuple)
-            status = "SUCCESS"
-        else:
-            status = "FAILED"
+    resolved_response, query_log, elapsed_time, domain = resolve_iteratively(raw_data)
+    status = "SUCCESS" if resolved_response else "FAILED"
 
-        record = {
-            "timestamp": packet_recv,
-            "client_ip": addr_tuple[0],
-            "queried_domain": qname,
-            "resolution_steps": loggin_detail,
-            "total_time_ms": timetaken,
-            "status": status
-        }
+    if resolved_response:
+        server_socket.sendto(resolved_response, client_address)
 
-        save_log_json(json_file, record)
-        print(f"✔ Logged resolution for {qname} ({timetaken} ms)")
+    log_entry = {
+        "timestamp": request_time,
+        "client_ip": client_address[0],
+        "queried_domain": domain,
+        "resolution_steps": query_log,
+        "total_time_ms": elapsed_time,
+        "status": status
+    }
+
+    write_log(log_file, log_entry)
+    print(f"Resolved {domain} in {elapsed_time} ms")
