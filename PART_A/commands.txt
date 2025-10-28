@@ -1,0 +1,8 @@
+#To install the cloned mininet, run the following command
+
+- sudo ./util/install.sh -a
+
+#To test the installation
+
+- sudo “PATH=$PATH” mn –test pingall
+
